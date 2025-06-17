@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resultado da Rifa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+      text-align: center;
+    }
+
+    h1,
+    h2 {
+      color: #333;
+    }
+
+    .winner {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .winner h3 {
+      color: #28a745;
+      margin-top: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .paid {
+      color: #28a745;
+    }
+
+    .pending {
+      color: #dc3545;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .trophy {
+      font-size: 60px;
+      margin: 20px 0;
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="confetti-container"></div>
+  <div class="trophy">🏆</div>
+  <h1>Resultado da Rifa</h1>
+
+  <div id="winners-container">
+    <div id="no-winners" class="winner">
+      <h3>Aguardando sorteio...</h3>
+      <p>Os vencedores ainda não foram sorteados.</p>
+    </div>
+  </div>
+
+  <h2>Lista de Participantes</h2>
+  <table id="participantsTable">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Número</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="participantsBody"></tbody>
+  </table>
+
+  <button onclick="loadData()">Atualizar Página</button>
+
+  <script>
+    // Cria efeito de confete
+    function createConfetti() {
+      const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+      const container = document.getElementById('confetti-container');
+
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = -10 + 'px';
+        confetti.style.width = Math.random() * 10 + 5 + 'px';
+        confetti.style.height = confetti.style.width;
+
+        container.appendChild(confetti);
+
+        const animationDuration = Math.random() * 3 + 2;
+
+        confetti.animate([
+          { top: -10 + 'px', opacity: 1, transform: 'rotate(0deg)' },
+          { top: 100 + 'vh', opacity: 0, transform: 'rotate(360deg)' }
+        ], {
+          duration: animationDuration * 1000,
+          easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)',
+          fill: 'forwards'
+        });
+
+        setTimeout(() => confetti.remove(), animationDuration * 1000);
+      }
+    }
+
+    // Carrega os dados do servidor
+    async function loadData() {
+      try {
+        const response = await fetch('get_data.php');
+        const data = await response.json();
+
+        // Atualiza a lista de participantes
+        const tbody = document.getElementById('participantsBody');
+        tbody.innerHTML = '';
+
+        if (data.participants && data.participants.length > 0) {
+          data.participants.forEach(p => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                            <td>${p.name}</td>
+                            <td>${p.number}</td>
+                            <td class="${p.paid ? 'paid' : 'pending'}">${p.paid ? 'Pago' : 'Pendente'}</td>
+                        `;
+            tbody.appendChild(row);
+          });
+        }
+
+        // Atualiza os vencedores
+        const winnersContainer = document.getElementById('winners-container');
+
+        if (data.winners && data.winners.length > 0) {
+          winnersContainer.innerHTML = '';
+
+          data.winners.forEach((winner, index) => {
+            const winnerDiv = document.createElement('div');
+            winnerDiv.className = 'winner';
+            winnerDiv.innerHTML = `
+                            <h3>${index + 1}º Lugar</h3>
+                            <p><strong>Nome:</strong> ${winner.name}</p>
+                            <p><strong>Número:</strong> ${winner.number}</p>
+                        `;
+            winnersContainer.appendChild(winnerDiv);
+          });
+
+          // Ativa o efeito de confete
+          createConfetti();
+        } else {
+          document.getElementById('no-winners').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      }
+    }
+
+    // Carrega os dados quando a página é aberta
+    window.onload = loadData;
+  </script>
+</body>
+
+</html>

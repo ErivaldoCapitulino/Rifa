@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Rifa</title>
+  <style>
+    /* ESTILOS DO LOGIN */
+    .login-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      margin: 50px auto;
+      text-align: center;
+    }
+
+    .login-form .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .login-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .login-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .login-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .error-message {
+      color: #dc3545;
+      margin-top: 10px;
+    }
+
+    .main-content {
+      display: none;
+    }
+
+    /* ESTILOS ORIGINAIS */
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    h1,
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .form-container,
+    .list-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    #drawButton {
+      background-color: #007bff;
+      display: block;
+      margin: 20px auto;
+    }
+
+    #drawButton:hover {
+      background-color: #0056b3;
+    }
+
+    #drawButton:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    #result {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 20px;
+      color: #d39e00;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .public-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .public-link a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .public-link a:hover {
+      text-decoration: underline;
+    }
+
+    .roulette-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+
+    .roulette-number {
+      font-size: 48px;
+      color: #ff5733;
+      transition: all 0.1s ease;
+    }
+
+    .winner-info {
+      margin: 10px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 5px;
+    }
+
+    .logout-btn {
+      background-color: #dc3545;
+      display: block;
+      margin: 20px auto;
+    }
+
+    .logout-btn:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Tela de Login -->
+  <div id="loginScreen" class="login-container">
+    <h2>Acesso do Administrador</h2>
+    <form class="login-form" onsubmit="checkLogin(event)">
+      <div class="form-group">
+        <label for="username">Usuário:</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" class="login-btn">Entrar</button>
+      <div id="loginError" class="error-message"></div>
+    </form>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div id="mainContent" class="main-content">
+    <h1>Gerenciador de Rifa (1 a 100)</h1>
+    <div class="form-container">
+      <h2>Adicionar Participante</h2>
+      <div class="form-group">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" required>
+      </div>
+      <div class="form-group">
+        <label for="number">Número (1-100):</label>
+        <input type="number" id="number" min="1" max="100" required>
+      </div>
+      <div class="form-group">
+        <label for="paid">Pagou?</label>
+        <select id="paid" required>
+          <option value="true">Sim</option>
+          <option value="false">Não</option>
+        </select>
+      </div>
+      <button onclick="addParticipant()">Adicionar</button>
+    </div>
+    <div class="list-container">
+      <h2>Lista de Participantes</h2>
+      <table id="participantsTable">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Número</th>
+            <th>Pagou</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="participantsBody"></tbody>
+      </table>
+    </div>
+    <div class="roulette-container">
+      <div id="roulette">Aguardando sorteio...</div>
+    </div>
+    <button id="drawButton" onclick="startRoulette()">Sortear 2 Vencedores</button>
+    <div id="result"></div>
+    <div class="public-link">
+      <p>Link público para verificar o resultado: <a href="public.html" target="_blank">Ver Resultado</a></p>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sair do Sistema</button>
+  </div>
+
+  <script>
+    // Sistema de Credenciais Seguro
+    function getAdminCredentials() {
+      // Verifica se as credenciais já foram configuradas
+      if (!localStorage.getItem('adminCredentialsSet')) {
+        const username = prompt("Configuração Inicial\nDigite o nome de usuário ADMIN:");
+        const password = prompt("Configuração Inicial\nDigite a senha ADMIN:");
+
+        if (username && password) {
+          // Armazena de forma segura (não ideal para produção, mas melhor que hardcoded)
+          localStorage.setItem('adminUsername', btoa(username));
+          localStorage.setItem('adminPassword', btoa(password));
+          localStorage.setItem('adminCredentialsSet', 'true');
+          alert("Credenciais configuradas com sucesso!");
+          location.reload();
+        } else {
+          alert("Você deve configurar as credenciais para continuar");
+          return { username: null, password: null };
+        }
+      }
+
+      return {
+        username: atob(localStorage.getItem('adminUsername')),
+        password: atob(localStorage.getItem('adminPassword'))
+      };
+    }
+
+    // Verifica o login
+    function checkLogin(event) {
+      event.preventDefault();
+
+      const credentials = getAdminCredentials();
+      if (!credentials.username) return;
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const errorElement = document.getElementById("loginError");
+
+      if (username === credentials.username && password === credentials.password) {
+        // Login bem-sucedido
+        sessionStorage.setItem("loggedIn", "true");
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        loadParticipants();
+      } else {
+        // Login falhou
+        errorElement.textContent = "Usuário ou senha incorretos";
+      }
+    }
+
+    // Logout
+    function logout() {
+      sessionStorage.removeItem("loggedIn");
+      document.getElementById("loginScreen").style.display = "block";
+      document.getElementById("mainContent").style.display = "none";
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("loginError").textContent = "";
+    }
+
+    // Verifica autenticação
+    function checkAuth() {
+      if (sessionStorage.getItem("loggedIn") === "true") {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        loadParticipants();
+      }
+    }
+
+    // Função para salvar dados no servidor
+    async function saveData(data) {
+      try {
+        const response = await fetch('save_data.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Erro ao salvar dados:', error);
+        return { success: false, error: error.message };
+      }
+    }
+
+    // Função para carregar dados do servidor
+    async function loadData() {
+      try {
+        const response = await fetch('get_data.php');
+        const data = await response.json();
+        return data || { participants: [], winners: [] };
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        return { participants: [], winners: [] };
+      }
+    }
+
+    // Carrega participantes
+    async function loadParticipants() {
+      const data = await loadData();
+      const participants = data.participants || [];
+      const tbody = document.getElementById("participantsBody");
+      tbody.innerHTML = "";
+      participants.forEach((p, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                    <td>${p.name}</td>
+                    <td>${p.number}</td>
+                    <td>${p.paid ? "Sim" : "Não"}</td>
+                    <td><button onclick="removeParticipant(${index})">Remover</button></td>
+                `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Adiciona participante
+    async function addParticipant() {
+      const name = document.getElementById("name").value.trim();
+      const number = parseInt(document.getElementById("number").value);
+      const paid = document.getElementById("paid").value === "true";
+
+      if (!name || isNaN(number) || number < 1 || number > 100) {
+        alert("Preencha todos os campos corretamente.");
+        return;
+      }
+
+      const data = await loadData();
+      const participants = data.participants || [];
+
+      if (participants.some(p => p.number === number)) {
+        alert("Número já escolhido.");
+        return;
+      }
+
+      participants.push({ name, number, paid });
+      data.participants = participants;
+
+      const result = await saveData(data);
+      if (result.success) {
+        document.getElementById("name").value = "";
+        document.getElementById("number").value = "";
+        loadParticipants();
+      } else {
+        alert("Erro ao salvar participante.");
+      }
+    }
+
+    // Remove participante
+    async function removeParticipant(index) {
+      const data = await loadData();
+      data.participants.splice(index, 1);
+      await saveData(data);
+      loadParticipants();
+    }
+
+    // Animação do sorteio
+    async function drawWinner(participantsList, rouletteDiv) {
+      const spins = 20 + Math.floor(Math.random() * 10);
+      const delay = 100;
+
+      for (let i = 0; i < spins; i++) {
+        const randomIndex = Math.floor(Math.random() * participantsList.length);
+        rouletteDiv.innerHTML = `<span class="roulette-number">${participantsList[randomIndex].number}</span>`;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+
+      return participantsList[Math.floor(Math.random() * participantsList.length)];
+    }
+
+    // Inicia o sorteio
+    async function startRoulette() {
+      const data = await loadData();
+      const paidParticipants = data.participants.filter(p => p.paid);
+
+      if (paidParticipants.length < 2) {
+        alert("Necessário pelo menos 2 participantes pagantes.");
+        return;
+      }
+
+      const drawButton = document.getElementById("drawButton");
+      drawButton.disabled = true;
+      const rouletteDiv = document.getElementById("roulette");
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "";
+
+      // Sorteio dos vencedores
+      const firstWinner = await drawWinner(paidParticipants, rouletteDiv);
+      const remaining = paidParticipants.filter(p => p.number !== firstWinner.number);
+      const secondWinner = await drawWinner(remaining, rouletteDiv);
+
+      // Exibe resultados
+      resultDiv.innerHTML = `
+                <div class="winner-info">
+                    <strong>Primeiro Ganhador:</strong> ${firstWinner.name} (Número: ${firstWinner.number})
+                </div>
+                <div class="winner-info">
+                    <strong>Segundo Ganhador:</strong> ${secondWinner.name} (Número: ${secondWinner.number})
+                </div>
+            `;
+
+      // Salva os vencedores
+      data.winners = [firstWinner, secondWinner];
+      await saveData(data);
+      drawButton.disabled = false;
+    }
+
+    // Inicialização
+    window.onload = function () {
+      getAdminCredentials();
+      checkAuth();
+    };
+  </script>
+</body>
+
+</html>

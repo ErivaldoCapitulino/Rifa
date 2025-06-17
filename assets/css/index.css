@@ -1,0 +1,195 @@
+/* ESTILOS DO LOGIN */
+.login-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.login-form .form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.login-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+}
+
+.login-btn:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-top: 10px;
+}
+
+.main-content {
+  display: none;
+}
+
+/* ESTILOS ORIGINAIS */
+body {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+h1,
+h2 {
+  text-align: center;
+  color: #333;
+}
+
+.form-container,
+.list-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #218838;
+}
+
+#drawButton {
+  background-color: #007bff;
+  display: block;
+  margin: 20px auto;
+}
+
+#drawButton:hover {
+  background-color: #0056b3;
+}
+
+#drawButton:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+#result {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+  color: #d39e00;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.public-link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.public-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.public-link a:hover {
+  text-decoration: underline;
+}
+
+.roulette-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.roulette-number {
+  font-size: 48px;
+  color: #ff5733;
+  transition: all 0.1s ease;
+}
+
+.winner-info {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 5px;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  display: block;
+  margin: 20px auto;
+}
+
+.logout-btn:hover {
+  background-color: #c82333;
+}
